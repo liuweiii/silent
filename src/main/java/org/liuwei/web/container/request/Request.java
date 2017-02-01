@@ -10,14 +10,14 @@ import java.util.logging.Logger;
 public class Request {
     private static final Logger LOGGER = Logger.getLogger(Request.class.getName());
 
-    public enum Method{
+    public enum HttpMethod {
         GET,
         POST,
         PUT,
         DELETE
     }
     public static class Header{
-        private Method method;
+        private HttpMethod httpMethod;
         private String path;
         private String protocol;
         private String host;
@@ -28,10 +28,10 @@ public class Request {
         public Header(String stringHeader){
             List<String> headers = Arrays.asList(stringHeader.split("\n"));
             String[] firstLineHeader = headers.get(0).split(" ");
-            this.method = Method.valueOf(firstLineHeader[0].toUpperCase());
+            this.httpMethod = HttpMethod.valueOf(firstLineHeader[0].toUpperCase());
             this.path = firstLineHeader[1];
             this.protocol = firstLineHeader[2];
-            headers.stream().forEach(header -> {
+            headers.forEach(header -> {
                 if(header.toUpperCase().startsWith("HOST:")){
                     this.host = header.split(":")[1].trim();
                 }else if(header.toUpperCase().startsWith("CONNECTION:")){
@@ -56,8 +56,8 @@ public class Request {
 
     private Header header;
 
-    public Method method(){
-        return header.method;
+    public HttpMethod httpMethod(){
+        return header.httpMethod;
     }
 
     public String path(){

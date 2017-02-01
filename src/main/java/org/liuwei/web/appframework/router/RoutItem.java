@@ -1,35 +1,45 @@
 package org.liuwei.web.appframework.router;
 
 
+import org.liuwei.web.container.request.Request;
+
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by apple on 2017/1/31.
  */
 public class RoutItem {
     private Method method;
-    private String keyPattern;
-    public RoutItem(String keyPattern, Method method){
-        this.keyPattern = keyPattern;
+    private Request.HttpMethod httpMethod;
+    private List<Integer> parameterPositions;
+
+    public RoutItem(Method method, Request.HttpMethod httpMethod, List<Integer> parameterPositions) {
+        this.parameterPositions = parameterPositions;
         this.method = method;
+        this.httpMethod = httpMethod;
     }
 
-    private boolean equalsPattern(String other){
-        return keyPattern.equals(other) || keyPattern.matches(other) || other.matches(keyPattern);
+    public Method getMethod() {
+        return method;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof RoutItem){
-            return equalsPattern(((RoutItem)obj).keyPattern);
-        }else if(obj instanceof String){
-            return equalsPattern((String)obj);
-        }
-        return false;
+    public Request.HttpMethod getHttpMethod() {
+        return httpMethod;
     }
 
-    @Override
-    public int hashCode() {
-        return super.hashCode();
+    public List<Integer> getParameterPositions() {
+        return parameterPositions;
+    }
+
+    public Object[] generateParameters(String path){
+        List<String> parameters = new ArrayList<>();
+        String[] slashs = path.split("/");
+        parameterPositions.forEach(p->{
+            parameters.add(slashs[p]);
+        });
+        return parameters.toArray();
     }
 }
