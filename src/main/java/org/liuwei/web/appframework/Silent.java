@@ -4,6 +4,8 @@ import org.liuwei.silent.controller.API;
 import org.liuwei.web.appframework.router.RoutItem;
 import org.liuwei.web.appframework.router.Router;
 import org.liuwei.web.appframework.router.Scanner;
+import org.liuwei.web.container.exception.ControllerNotFoundException;
+import org.liuwei.web.container.exception.ControllerWithHttpMethodNotFoundException;
 import org.liuwei.web.container.request.Request;
 import org.liuwei.web.container.response.Response;
 import org.liuwei.web.container.webserver.WebApp;
@@ -25,16 +27,22 @@ public class Silent implements WebApp {
 
     @Override
     public Response processRequest(Request request) {
-        RoutItem routItem = router.get(request.path());
 
         try {
+            RoutItem routItem = router.get(request.path(), request.httpMethod());
             Object[] args = routItem.generateParameters(request.path());
             return (Response) routItem.getMethod().invoke(api, args);
         } catch (IllegalAccessException e) {
             LOGGER.warning("IllegalAccessException :"+e.getMessage());
         } catch (InvocationTargetException e) {
             LOGGER.warning("InvocationTargetException :"+e.getMessage());
-        } catch (Exception e){
+        } catch (ControllerWithHttpMethodNotFoundException e){
+            LOGGER.warning("ControllerWithHttpMethodNotFoundException :"+e.getMessage());
+            return new Response("HTTP/1.1 405 Method Not Allowed", e.getMessage());
+        }catch(ControllerNotFoundException e){
+            LOGGER.warning("ControllerNotFoundException :"+e.getMessage());
+            return new Response("HTTP/1.1 404 Not Found", e.getMessage());
+        }catch (Exception e){
             LOGGER.warning("Exception :"+e.getMessage());
         }
         return new Response("HTTP/1.1 500 Internal Server Error", "WebApp Exception[Internal Server Error]!");

@@ -1,6 +1,8 @@
 package org.liuwei.web.appframework.router;
 
 import org.liuwei.web.appframework.notation.path;
+import org.liuwei.web.container.exception.ControllerNotFoundException;
+import org.liuwei.web.container.exception.ControllerWithHttpMethodNotFoundException;
 import org.liuwei.web.container.request.Request;
 
 import java.lang.reflect.Method;
@@ -16,16 +18,16 @@ public class Router {
         routItems = new HashMap<>();
     }
 
-    public RoutItem get(String pathPattern) {
-        return get(new PathPattern(pathPattern));
-    }
-
-    public RoutItem get(PathPattern pathPattern){
-        return routItems.get(pathPattern);
-    }
-
-    public void put(String pathPattern, RoutItem routItem) {
-        put(new PathPattern(pathPattern), routItem);
+    public RoutItem get(String pathPattern, Request.HttpMethod httpMethod) {
+        RoutItem routItem = routItems.get(new PathPattern(pathPattern));
+        if(null == routItem){
+            throw new ControllerNotFoundException("resource "+pathPattern+" not found.");
+        }
+        if(httpMethod != routItem.getHttpMethod()){
+            throw new ControllerWithHttpMethodNotFoundException("method "+httpMethod+" not support.");
+        }else{
+            return routItem;
+        }
     }
 
     public void put(PathPattern pathPattern, RoutItem routItem){
