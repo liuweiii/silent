@@ -1,6 +1,7 @@
 package org.liuwei.web.container.webserver;
 
 import com.google.common.base.Strings;
+import org.liuwei.web.appframework.Silent;
 import org.liuwei.web.container.exception.SwallowException;
 import org.liuwei.web.container.request.Request;
 import org.liuwei.web.container.response.Response;
@@ -19,6 +20,8 @@ public class Server {
     private static final Logger LOGGER = Logger.getLogger(Server.class.getName());
 
     private static final ExecutorService pool = Executors.newFixedThreadPool(10);
+
+    private final WebApp app = new Silent();
 
     public void start() throws IOException {
         ServerSocket socket = new ServerSocket(8011);
@@ -106,7 +109,8 @@ public class Server {
 //    }
 
     private Response dispatchRequest(Request request) {
-        return new Response("HTTP/1.1 200 OK","abc123...");
+        return app.processRequest(request);
+//        return new Response("HTTP/1.1 200 OK","abc123...");
     }
 
     private boolean isShutdownRequest(Request request) {
