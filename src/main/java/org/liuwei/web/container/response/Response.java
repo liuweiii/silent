@@ -6,14 +6,14 @@ package org.liuwei.web.container.response;
 public class Response {
 
     private String content;
-    private String statusCode;
+    private HttpStatusCode statusCode;
 
-    public Response(String statusCode, String content){
+    public Response(HttpStatusCode statusCode, String content){
         this.statusCode = statusCode;
         this.content = content;
     }
 
-    public String getStatusCode() {
+    public HttpStatusCode getStatusCode() {
         return statusCode;
     }
 

@@ -7,6 +7,7 @@ import org.liuwei.web.appframework.router.Scanner;
 import org.liuwei.web.container.exception.ControllerNotFoundException;
 import org.liuwei.web.container.exception.ControllerWithHttpMethodNotFoundException;
 import org.liuwei.web.container.request.Request;
+import org.liuwei.web.container.response.HttpStatusCode;
 import org.liuwei.web.container.response.Response;
 import org.liuwei.web.container.webserver.WebApp;
 
@@ -38,13 +39,13 @@ public class Silent implements WebApp {
             LOGGER.warning("InvocationTargetException :"+e.getMessage());
         } catch (ControllerWithHttpMethodNotFoundException e){
             LOGGER.warning("ControllerWithHttpMethodNotFoundException :"+e.getMessage());
-            return new Response("HTTP/1.1 405 Method Not Allowed", e.getMessage());
+            return new Response(HttpStatusCode.METHOD_NOT_ALLOWED, e.getMessage());
         }catch(ControllerNotFoundException e){
             LOGGER.warning("ControllerNotFoundException :"+e.getMessage());
-            return new Response("HTTP/1.1 404 Not Found", e.getMessage());
+            return new Response(HttpStatusCode.NOT_FOUND, e.getMessage());
         }catch (Exception e){
             LOGGER.warning("Exception :"+e.getMessage());
         }
-        return new Response("HTTP/1.1 500 Internal Server Error", "WebApp Exception[Internal Server Error]!");
+        return new Response(HttpStatusCode.INTERNAL_SERVER_ERROR, "WebApp Exception[Internal Server Error]!");
     }
 }
